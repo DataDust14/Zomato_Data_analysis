@@ -1,0 +1,76 @@
+#Calculating mean of Cost, ratings and Votes provided to each restruants in Every City
+select
+city,
+round(avg(Avg_Cost),2) as Mean_Cost,
+round(avg(Aggregate_rating),2) as Mean_Rating,
+round(avg(Votes),2) as mean_votes
+from zomato_data1
+group by city
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+#Calculating Median of Cost, ratings and Votes provided to each restruants in Every City
+with cte1 as
+(
+select city, count(avg_cost) as N
+from zomato_data1
+group by 1
+)
+select
+city,
+case when N%2 != 0 then round(((N+1)/2),2)
+else round(((n/2+((n/2)+1))/2),2)
+end as median
+from cte1
+group by city
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+#Classified restro based upon there ratings and votes.
+ SELECT Restaurant_Name, city,
+ case 
+	when Aggregate_rating > 4.4 then 'Top Restaurant'
+	when Aggregate_rating between 3.5 and 4.4 THEN 'Average Restaurant'
+    else 'Poor Restaurant'
+    end as Restro_Rating,
+case
+	when Votes > 500 THEN 'High Serviced Restro'
+    when Votes BETWEEN 100 AND 499 THEN 'Medium Serviced Restro'
+    else 'Poor Serviced Restro'
+    END as Restro_votes
+ from  zomato_data1
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+#Most ordered cuisines and average_revenue generated from particular cuisine.
+
+select Cuisines, count(Cuisines), sum(Avg_Cost) as avg_revenue
+from zomato_data1
+group by 1
+order by 2 DESC
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+# Restaurants with No Online Delivery and No Table Booking Option and there average_revenue
+
+select Restaurant_Name, Avg_Cost from zomato_data1
+where Table_booking = 'NO' AND Online_delivery = 'No';
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+# Restaurants with Yes Online Delivery and yes Table Booking Option and there average_revenue
+
+select Restaurant_Name, Avg_Cost from zomato_data1
+where Table_booking = 'Yes' AND Online_delivery = 'Yes';
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+#Identify cities and cuisines with the highest and lowest average ratings and costs.
+
+select Cuisines, Avg_Cost, Aggregate_rating
+from zomato_data1
+where Aggregate_rating BETWEEN 1 AND 2.5
+order by 3 ASC;
+
